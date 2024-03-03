@@ -2,8 +2,9 @@ import { FreshContext } from "$fresh/server.ts";
 import { load } from "https://deno.land/std@0.218.0/dotenv/mod.ts";
 import { getCookies } from "$std/http/cookie.ts";
 
-interface State {
+export interface State {
     token: string | null;
+    apiUrl: string | null;
 }
 
 export async function handler(
@@ -16,6 +17,7 @@ export async function handler(
 
     if (partrelateToken) {
         ctx.state.token = partrelateToken;
+        ctx.state.apiUrl = apiUrl;
     } else {
         ctx.state.token = null;
         // NAVIGATE => LOGIN
