@@ -29,7 +29,7 @@ export function Navbar() {
                                 {
                                     routes.map(route =>
                                         <li className="nav-item">
-                                            <a href={route.url} className="nav-link">{route.name}</a>
+                                            <a href={route.url} class="nav-link">{route.name}</a>
                                         </li>
                                     )
                                 }

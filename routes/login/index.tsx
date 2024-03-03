@@ -1,28 +1,33 @@
-import { Handlers } from "$fresh/server.ts";
+import { Handlers, PageProps } from "$fresh/server.ts";
 import { Cookie, setCookie } from "$std/http/cookie.ts";
 import { State } from "../_middleware.ts";
 
 export const handler: Handlers<any, State> = {
     async GET(req, ctx) {
-      return await ctx.render();
+        return await ctx.render();
     },
     async POST(req, ctx) {
         const { apiUrl } = ctx.state;
         const form = await req.formData();
         const username = form.get("username")?.toString();
         const password = form.get("password")?.toString();
+        const headers = new Headers();
 
         const response = await fetch(`${apiUrl}/login`, {
             method: "POST",
             body: JSON.stringify({ username, password })
         });
+        const jsonData = await response.text();
+
         if (response.status !== 200) {
-            return await ctx.render();
+            headers.set("location", `/login?error=${jsonData}`);
+            return new Response(null, {
+                status: 303,
+                headers
+            });
         }
 
-        const jsonData = await response.text();
         const tokenCookie: Cookie = { name: "partrelateToken", value: jsonData };
-        const headers = new Headers();
         setCookie(headers, tokenCookie);
         headers.set("location", "/");
 
@@ -33,7 +38,7 @@ export const handler: Handlers<any, State> = {
     },
   };
 
-export default function LoginPage() {
+export default function LoginPage(props: PageProps) {
     return (
         <div className="container">
             <div className="card">

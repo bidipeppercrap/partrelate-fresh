@@ -3,9 +3,7 @@ export function Footer() {
         <footer class="footer mt-auto py-3 border-top">
             <div className="container">
                 <div className="row">
-                <div className="col-auto">PartRelate</div>
-                <div className="col"></div>
-                <div className="col-auto">2024</div>
+                <div className="col-auto"><i className="bi-gear"></i> PartRelate</div>
                 </div>
             </div>
         </footer>

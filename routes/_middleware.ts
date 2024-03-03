@@ -15,9 +15,10 @@ export async function handler(
     const apiUrl = env["API_URL"];
     const partrelateToken = getCookies(req.headers)["partrelateToken"];
 
+    ctx.state.apiUrl = apiUrl;
+
     if (partrelateToken) {
         ctx.state.token = partrelateToken;
-        ctx.state.apiUrl = apiUrl;
     } else {
         ctx.state.token = null;
         // NAVIGATE => LOGIN
