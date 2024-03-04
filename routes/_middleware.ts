@@ -19,9 +19,19 @@ export async function handler(
 
     if (partrelateToken) {
         ctx.state.token = partrelateToken;
-    } else {
+        if (ctx.route.startsWith("/login"))
+        return new Response("", {
+            status: 301,
+            headers: { Location: "/" }
+        });
+    }
+    if (!partrelateToken && !ctx.route.startsWith("/login")) {
         ctx.state.token = null;
-        // NAVIGATE => LOGIN
+
+        return new Response("", {
+            status: 301,
+            headers: { Location: "/login" }
+        });
     }
 
     return ctx.next();

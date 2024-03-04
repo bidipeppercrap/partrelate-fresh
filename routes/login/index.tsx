@@ -36,7 +36,7 @@ export const handler: Handlers<any, State> = {
             headers,
         });
     },
-  };
+};
 
 export default function LoginPage(props: PageProps) {
     return (

@@ -1,10 +1,20 @@
-import { useSignal } from "@preact/signals";
+import { Handlers, PageProps } from "$fresh/server.ts";
+import VehicleSearch from "../../islands/VehicleSearch.tsx";
+import { State } from "../_middleware.ts";
 
-export default function VehiclePage() {
-  const count = useSignal(3);
+export const handler: Handlers<any, State> = {
+    async GET(req, ctx) {
+      return await ctx.render(ctx.state);
+    },
+};
+
+export default function VehiclePage(props: PageProps<State>) {
   return (
-    <div className="container">
-      <h1 class="mt-5">Vehicle</h1>
+    <div className="container my-5">
+      <h1>Vehicle</h1>
+      <div className="row mt-3">
+        <VehicleSearch contextState={props.data} />
+      </div>
     </div>
   );
 }

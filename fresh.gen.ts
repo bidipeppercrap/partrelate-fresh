@@ -12,6 +12,7 @@ import * as $login_index from "./routes/login/index.tsx";
 import * as $part_index from "./routes/part/index.tsx";
 import * as $vehicle_index from "./routes/vehicle/index.tsx";
 import * as $Counter from "./islands/Counter.tsx";
+import * as $VehicleSearch from "./islands/VehicleSearch.tsx";
 import { type Manifest } from "$fresh/server.ts";
 
 const manifest = {
@@ -28,6 +29,7 @@ const manifest = {
   },
   islands: {
     "./islands/Counter.tsx": $Counter,
+    "./islands/VehicleSearch.tsx": $VehicleSearch,
   },
   baseUrl: import.meta.url,
 } satisfies Manifest;
