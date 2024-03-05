@@ -2,16 +2,16 @@ import { debounce } from "$std/async/debounce.ts";
 import { StateUpdater, useCallback, useMemo } from "preact/hooks";
 
 export default function DebouncedSearch({
-    setLoading,
-    searchFunction
+    onLoading,
+    onBeginSearching
 }: {
-    setLoading: StateUpdater<boolean>,
-    searchFunction: (q: string) => Promise<void>
+    onLoading: () => void,
+    onBeginSearching: (q: string) => void
 }) {
-    const beginSearching = useCallback(async (q: string) => {
-        await searchFunction(q);
+    const beginSearching = useCallback((q: string) => {
+        onBeginSearching(q);
 
-        setLoading(false);
+        onLoading();
     }, []);
 
     const debouncedBeginSearching = useMemo(() => {
@@ -22,7 +22,7 @@ export default function DebouncedSearch({
         searchChange(e) {
             const q = e.target.value;
 
-            setLoading(true);
+            onLoading();
             debouncedBeginSearching(q);
         }
     }

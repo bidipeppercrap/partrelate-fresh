@@ -1,49 +1,46 @@
 import { useEffect, useState } from "preact/hooks";
-import DebouncedSearch from "../components/DebouncedSearch.tsx";
 import { State } from "../routes/_middleware.ts";
+import { Pagination } from "../types/pagination.ts";
+import { Search } from "../types/search.ts";
 import PaginationSimple from "../components/PaginationSimple.tsx";
-import { SearchList } from "../types/search-list.ts";
+import DebouncedSearch from "../components/DebouncedSearch.tsx";
 
-export default function VehicleSearch({
+export default function PartSearch({
     contextState
 }: {
     contextState: State
 }) {
     const { apiUrl, token } = contextState;
-    const [search, setSearch] = useState<SearchList>({
-        loading: false,
-        query: "",
-        pagination: {
-            currentPage: 1,
-            totalPages: 1
-        },
-        list: []
+    const [search, setSearch] = useState<Search>({ loading: false, query: "" });
+    const [pagination, setPagination] = useState<Pagination>({
+        currentPage: 1,
+        totalPages: 1
     });
 
-    useEffect(() => {
-        const beginSearching = async () => await searchVehicle(search.query, search.pagination.currentPage);
-        beginSearching();
-    }, [search.query, search.pagination.currentPage]);
+    const [parts, setParts] = useState([]);
 
-    async function searchVehicle(q: string, page: number) {
+    useEffect(() => {
+        const beginSearching = async () => await searchPart(search.query, pagination.currentPage);
+        beginSearching();
+    }, [search.query, pagination.currentPage]);
+
+    async function searchPart(q: string, page: number) {
         setSearch(prev => ({ ...prev, loading: true }));
-        const res = await fetch(`${apiUrl}/vehicles?keyword=${q}&page=${page}`, {
+        const res = await fetch(`${apiUrl}/parts?keyword=${q}&page=${page}`, {
             headers: { "Authorization": `Bearer ${token}`}
         })
 
         const jsonData = await res.json();
 
-        setSearch(prev => ({
-            ...prev,
-            loading: false,
-            pagination: { ...prev.pagination, totalPages: jsonData.totalPages },
-            list: jsonData.data
-        }));
+        setParts(jsonData.data);
+        setPagination(prev => ({ ...prev, totalPages: jsonData.totalPages || 1 }));
+        setSearch(prev => ({ ...prev, loading: false }));
     }
 
     const handlers = {
         searchChange(q: string) {
-            setSearch(prev => ({ ...prev, query: q, pagination: { ...prev.pagination, currentPage: 1 } }));
+            setSearch(prev => ({ ...prev, query: q }));
+            setPagination(prev => ({ ...prev, currentPage: 1 }));
         }
     }
 
@@ -62,15 +59,15 @@ export default function VehicleSearch({
                     search.loading ? <h3 className="text-secondary text-center">Loading...</h3> : null
                 }
                 {
-                    !search.loading && search.list.length < 1 ? <h3 className="text-secondary text-center">No vehicle found</h3> : null
+                    !search.loading && parts.length < 1 ? <h3 className="text-secondary text-center">No part found</h3> : null
                 }
                 {
-                    !search.loading && search.list.length > 0
+                    !search.loading && parts.length > 0
                     ? (
                         <div className="list-group">
                             {
-                                search.list.map(vehicle =>
-                                    <a key={vehicle.id} href="#" className="list-group-item list-group-item-action">{vehicle.name}</a>
+                                parts.map(part =>
+                                    <a key={part.id} href="#" className="list-group-item list-group-item-action">{part.name}</a>
                                 )
                             }
                         </div>
@@ -79,7 +76,7 @@ export default function VehicleSearch({
                 }
             </div>
             <div className="mt-3">
-                <PaginationSimple onPageChange={(step) => setSearch(prev => ({ ...prev, pagination: { ...prev.pagination, currentPage: prev.pagination.currentPage + step } }))} pagination={search.pagination} />
+                <PaginationSimple onPageChange={(step) => setPagination(prev => ({...prev, currentPage: prev.currentPage + step}))} pagination={pagination} />
             </div>
         </>
     );
