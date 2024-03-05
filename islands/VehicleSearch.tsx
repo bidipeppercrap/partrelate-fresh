@@ -3,6 +3,7 @@ import DebouncedSearch from "../components/DebouncedSearch.tsx";
 import { State } from "../routes/_middleware.ts";
 import PaginationSimple from "../components/PaginationSimple.tsx";
 import { SearchList } from "../types/search-list.ts";
+import { Vehicle } from "../types/vehicle.ts";
 
 export default function VehicleSearch({
     contextState
@@ -10,7 +11,7 @@ export default function VehicleSearch({
     contextState: State
 }) {
     const { apiUrl, token } = contextState;
-    const [search, setSearch] = useState<SearchList>({
+    const [search, setSearch] = useState<SearchList<Vehicle>>({
         loading: false,
         query: "",
         pagination: {
@@ -54,7 +55,7 @@ export default function VehicleSearch({
                     <DebouncedSearch onLoading={() => setSearch(prev => ({ ...prev, loading: true }))} onBeginSearching={handlers.searchChange} />
                 </div>
                 <div className="col-auto">
-                    <button type="button" className="btn btn-primary"><i className="bi-plus"></i></button>
+                    <a href="/vehicle/create" role="button" className="btn btn-primary"><i className="bi-plus"></i></a>
                 </div>
             </div>
             <div className="mt-3">
@@ -70,7 +71,7 @@ export default function VehicleSearch({
                         <div className="list-group">
                             {
                                 search.list.map(vehicle =>
-                                    <a key={vehicle.id} href="#" className="list-group-item list-group-item-action">{vehicle.name}</a>
+                                    <a key={vehicle.id} href={`/vehicle/${vehicle.id}`} className="list-group-item list-group-item-action">{vehicle.name}</a>
                                 )
                             }
                         </div>

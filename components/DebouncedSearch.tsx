@@ -1,12 +1,22 @@
 import { debounce } from "$std/async/debounce.ts";
-import { StateUpdater, useCallback, useMemo } from "preact/hooks";
+import { useCallback, useEffect, useMemo } from "preact/hooks";
 
 export default function DebouncedSearch({
+    value,
+    placeholder = "Search...",
+    minCharacter = 0,
+    onKeyUp,
     onLoading,
-    onBeginSearching
+    onBeginSearching,
+    onSearchChange
 }: {
+    value?: string,
+    placeholder?: string,
+    minCharacter?: number,
+    onKeyUp?: (e: Event) => void,
     onLoading: () => void,
-    onBeginSearching: (q: string) => void
+    onBeginSearching: (q: string) => void,
+    onSearchChange?: (value: string) => void
 }) {
     const beginSearching = useCallback((q: string) => {
         onBeginSearching(q);
@@ -22,12 +32,19 @@ export default function DebouncedSearch({
         searchChange(e) {
             const q = e.target.value;
 
+            if (onSearchChange) onSearchChange(q);
+            if (q.length < minCharacter) return;
             onLoading();
             debouncedBeginSearching(q);
         }
     }
 
     return (
-        <input onInput={handlers.searchChange} type="text" className="form-control" placeholder="Search..." />
+        <input
+            onKeyUp={onKeyUp}
+            value={value}
+            onInput={handlers.searchChange}
+            type="text" className="form-control" placeholder={placeholder}
+        />
     );
 }

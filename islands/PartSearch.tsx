@@ -4,6 +4,7 @@ import { Pagination } from "../types/pagination.ts";
 import { Search } from "../types/search.ts";
 import PaginationSimple from "../components/PaginationSimple.tsx";
 import DebouncedSearch from "../components/DebouncedSearch.tsx";
+import { Part } from "../types/part.ts";
 
 export default function PartSearch({
     contextState
@@ -17,7 +18,7 @@ export default function PartSearch({
         totalPages: 1
     });
 
-    const [parts, setParts] = useState([]);
+    const [parts, setParts] = useState<Part[]>([]);
 
     useEffect(() => {
         const beginSearching = async () => await searchPart(search.query, pagination.currentPage);
@@ -51,7 +52,7 @@ export default function PartSearch({
                     <DebouncedSearch onLoading={() => setSearch(prev => ({ ...prev, loading: true }))} onBeginSearching={handlers.searchChange} />
                 </div>
                 <div className="col-auto">
-                    <button type="button" className="btn btn-primary"><i className="bi-plus"></i></button>
+                    <a href="/part/create" role="button" className="btn btn-primary"><i className="bi-plus"></i></a>
                 </div>
             </div>
             <div className="mt-3">
