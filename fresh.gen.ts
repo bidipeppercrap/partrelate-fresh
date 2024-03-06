@@ -18,6 +18,7 @@ import * as $Counter from "./islands/Counter.tsx";
 import * as $PartCreate from "./islands/PartCreate.tsx";
 import * as $PartSearch from "./islands/PartSearch.tsx";
 import * as $VehicleCreate from "./islands/VehicleCreate.tsx";
+import * as $VehicleDetail from "./islands/VehicleDetail.tsx";
 import * as $VehiclePartSearch from "./islands/VehiclePartSearch.tsx";
 import * as $VehicleSearch from "./islands/VehicleSearch.tsx";
 import { type Manifest } from "$fresh/server.ts";
@@ -42,6 +43,7 @@ const manifest = {
     "./islands/PartCreate.tsx": $PartCreate,
     "./islands/PartSearch.tsx": $PartSearch,
     "./islands/VehicleCreate.tsx": $VehicleCreate,
+    "./islands/VehicleDetail.tsx": $VehicleDetail,
     "./islands/VehiclePartSearch.tsx": $VehiclePartSearch,
     "./islands/VehicleSearch.tsx": $VehicleSearch,
   },

@@ -8,3 +8,11 @@ export interface VehiclePart {
     note: string,
     partsToVehicleParts: PartToVehiclePart[]
 }
+
+export const vehiclePartRaw: VehiclePart = {
+    vehicleId: 0,
+    name: "",
+    description: "",
+    note: "",
+    partsToVehicleParts: []
+}

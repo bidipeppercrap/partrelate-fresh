@@ -3,6 +3,7 @@ import { State } from "../routes/_middleware.ts";
 import { SearchList } from "../types/search-list.ts";
 import { Vehicle } from "../types/vehicle.ts";
 import DebouncedSearch from "../components/DebouncedSearch.tsx";
+import { useSignal } from "@preact/signals";
 
 const vehicleRaw: Vehicle = {
     name: "",
@@ -13,11 +14,15 @@ const vehicleRaw: Vehicle = {
 export default function VehicleCreate({
     contextState,
     vehicleData,
-    onSave
+    onSave,
+    onRefresh,
+    onDelete
 }: {
     contextState: State,
     vehicleData?: Vehicle,
-    onSave: "create" | "update"
+    onSave: "create" | "update",
+    onRefresh?: () => Promise<void>,
+    onDelete?: () => Promise<void>
 }) {
     const { apiUrl, token } = contextState;
     const [search, setSearch] = useState<SearchList<Vehicle>>({
@@ -31,6 +36,7 @@ export default function VehicleCreate({
     });
     const [vehicle, setVehicle] = useState<Vehicle>(Object.assign({}, vehicleData || vehicleRaw));
     const [mode, setMode] = useState<"edit" | "view">(onSave === "update" ? "view" : "edit");
+    const deleteConfirmation = useSignal(false);
 
     useEffect(() => {
         const beginSearching = async () => await searchVehicle(search.query, 1);
@@ -75,6 +81,8 @@ export default function VehicleCreate({
             body: JSON.stringify(vehicle)
         });
 
+        if (onRefresh) await onRefresh();
+
         setMode("view");
     }
 
@@ -92,7 +100,7 @@ export default function VehicleCreate({
         },
         async handleSearchKeyUp(e: Event) {
             if (e.key === "Enter") await handlers.saveVehicle();
-        },
+        }
     }
 
     const listGenerate = () => {
@@ -120,14 +128,38 @@ export default function VehicleCreate({
                 ? (
                     <div className="row">
                         <div className="col">
-                            <div className="row g-2">
-                                <div className="col-auto">
-                                    <button onClick={() => setMode("edit")} type="button" className="btn btn-primary"><i className="bi-pencil"></i></button>
-                                </div>
-                                <div className="col-auto">
-                                    <button type="button" className="btn btn-danger"><i className="bi-trash"></i></button>
-                                </div>
-                            </div>
+                            {
+                                deleteConfirmation.value
+                                ? (
+                                    <>
+                                    <div className="col-auto fw-bold text-secondary">You sure?</div>
+                                    <div className="row g-2 align-items-center mt-1">
+                                        <div className="col-auto">
+                                            <button onClick={onDelete} type="button" className="btn btn-outline-secondary">Yes</button>
+                                        </div>
+                                        <div className="col-auto">
+                                            <button onClick={() => deleteConfirmation.value = false} type="button" className="btn btn-outline-secondary">No</button>
+                                        </div>
+                                    </div>
+                                    </>
+                                ) : (
+                                    <div className="row g-2">
+                                        <div className="col-auto">
+                                            <button onClick={() => setMode("edit")} type="button" className="btn btn-primary"><i className="bi-pencil"></i></button>
+                                        </div>
+                                        {
+                                            onDelete
+                                            ? (
+                                                <div className="col-auto">
+                                                    <button onClick={() => deleteConfirmation.value = true} type="button" className="btn btn-danger"><i className="bi-trash"></i></button>
+                                                </div>
+                                            )
+                                            : null
+                                        }
+                                    </div>
+                                )
+                            }
+                            
                             {vehicle.description ? <div className="alert alert-secondary mt-2">{vehicle.description}</div> : null}
                             {vehicle.note ? <div className="alert alert-warning mt-2">{vehicle.note}</div> : null}
                         </div>
