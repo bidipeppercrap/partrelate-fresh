@@ -55,8 +55,10 @@ export default function PartToVehiclePartForm({
         const jsonData = await res.json();
 
         selectorItems.value = jsonData.data;
-        if (selectorItems.value) selectorIndex.value = 0;
         selectorLoading.value = false;
+
+        if (jsonData.data) selectorIndex.value = 0;
+        if (jsonData.data.length === 0) selectorIndex.value = null;
     }
 
     async function createPart(name: string) {
@@ -76,7 +78,7 @@ export default function PartToVehiclePartForm({
 
         const jsonData = await res.json();
 
-        selectedPart.value = jsonData;
+        selectedPart.value = jsonData[0];
 
         partCreateLoading.value = false;
         if (descriptionInput.current) descriptionInput.current.focus();
