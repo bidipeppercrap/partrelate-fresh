@@ -71,6 +71,7 @@ export default function VehicleDetail({
                     vehicleId={vehicle.value.id!}
                     vehicleParts={vehicle.value.vehicleParts}
                     onCreate={createVehiclePart}
+                    onRefresh={refreshData}
                 />
             </div>
         </div>

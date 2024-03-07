@@ -7,10 +7,12 @@ import { PartToVehiclePart } from "../types/part-to-vehicle-part.ts";
 
 export default function PartToVehiclePartForm({
     contextState,
-    vehiclePartId
+    vehiclePartId,
+    onRefresh
 }: {
     contextState: State
-    vehiclePartId: number
+    vehiclePartId: number,
+    onRefresh: () => Promise<void>
 }) {
     const { apiUrl, token } = contextState;
 
@@ -33,7 +35,13 @@ export default function PartToVehiclePartForm({
         const beginSearching = async (q: string) => await searchParts(q);
 
         beginSearching(partValue.value);
-    })
+    });
+
+    function clearForm() {
+        partValue.value = "";
+        descriptionValue.value = "";
+        quantityValue.value = "";
+    }
 
     async function searchParts(q: string) {
         selectorLoading.value = true;
@@ -102,6 +110,10 @@ export default function PartToVehiclePartForm({
             headers: { "Authorization": `Bearer ${token}`},
             body: JSON.stringify(newData)
         });
+
+        await onRefresh();
+
+        clearForm();
     }
 
     const handlers = {

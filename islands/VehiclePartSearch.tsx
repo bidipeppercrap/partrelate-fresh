@@ -7,12 +7,14 @@ export default function VehiclePartSearch({
     contextState,
     vehicleId,
     vehicleParts,
-    onCreate
+    onCreate,
+    onRefresh
 }: {
     contextState: State,
     vehicleId: number,
     vehicleParts: VehiclePart[],
-    onCreate: (vp: VehiclePart) => Promise<void>
+    onCreate: (vp: VehiclePart) => Promise<void>,
+    onRefresh: () => Promise<void>
 }) {
     const mode = useSignal<"view" | "create">("view");
     const search = useSignal("");
@@ -66,7 +68,7 @@ export default function VehiclePartSearch({
                 <div className="mt-3">
                     {
                         filteredVehicleParts.value.length > 0
-                        ? <VehiclePartList contextState={contextState} vehiclePartList={filteredVehicleParts.value} />
+                        ? <VehiclePartList onRefresh={onRefresh} contextState={contextState} vehiclePartList={filteredVehicleParts.value} />
                         : <h3 className="text-secondary text-center">No vehicle part found.</h3>
                     }
                 </div>
@@ -98,7 +100,7 @@ export default function VehiclePartSearch({
                         </div>
                     </div>
                     <div className="col">
-                        <VehiclePartList contextState={contextState} vehiclePartList={filteredVehicleParts.value} />
+                        <VehiclePartList onRefresh={onRefresh} contextState={contextState} vehiclePartList={filteredVehicleParts.value} />
                     </div>
                 </div>
             )

@@ -5,10 +5,12 @@ import { State } from "../routes/_middleware.ts";
 
 export default function VehiclePartList({
     vehiclePartList,
-    contextState
+    contextState,
+    onRefresh
 }: {
     vehiclePartList: VehiclePart[],
-    contextState: State
+    contextState: State,
+    onRefresh: () => Promise<void>
 }) {
     const currentAccordion = useSignal<number | null>(null);
 
@@ -51,7 +53,7 @@ export default function VehiclePartList({
                                             : <h5 className="text-secondary text-center">No part yet</h5>
                                         }
                                         <div className="mt-3">
-                                            <PartToVehiclePartForm contextState={contextState} />
+                                            <PartToVehiclePartForm onRefresh={onRefresh} contextState={contextState} vehiclePartId={vehiclePart.id} />
                                         </div>
                                     </div>
                                 </div>
