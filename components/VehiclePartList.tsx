@@ -1,10 +1,14 @@
 import { useSignal } from "@preact/signals";
 import { VehiclePart } from "../types/vehicle-part.ts";
+import PartToVehiclePartForm from "./PartToVehiclePartForm.tsx";
+import { State } from "../routes/_middleware.ts";
 
 export default function VehiclePartList({
-    vehiclePartList
+    vehiclePartList,
+    contextState
 }: {
-    vehiclePartList: VehiclePart[]
+    vehiclePartList: VehiclePart[],
+    contextState: State
 }) {
     const currentAccordion = useSignal<number | null>(null);
 
@@ -46,6 +50,9 @@ export default function VehiclePartList({
                                             )
                                             : <h5 className="text-secondary text-center">No part yet</h5>
                                         }
+                                        <div className="mt-3">
+                                            <PartToVehiclePartForm contextState={contextState} />
+                                        </div>
                                     </div>
                                 </div>
                             )

@@ -1,4 +1,4 @@
-import { FreshContext, Handlers, PageProps } from "$fresh/server.ts";
+import { Handlers, PageProps } from "$fresh/server.ts";
 import { State } from "../../_middleware.ts";
 import VehicleDetailContent from "../../../islands/VehicleDetail.tsx";
 

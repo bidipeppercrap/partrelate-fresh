@@ -55,7 +55,7 @@ export default function VehicleSearch({
                     <DebouncedSearch onLoading={() => setSearch(prev => ({ ...prev, loading: true }))} onBeginSearching={handlers.searchChange} />
                 </div>
                 <div className="col-auto">
-                    <a href="/vehicle/create" role="button" className="btn btn-primary"><i className="bi-plus"></i></a>
+                    <a href="/vehicles/create" role="button" className="btn btn-primary"><i className="bi-plus"></i></a>
                 </div>
             </div>
             <div className="mt-3">
@@ -71,7 +71,7 @@ export default function VehicleSearch({
                         <div className="list-group">
                             {
                                 search.list.map(vehicle =>
-                                    <a key={vehicle.id} href={`/vehicle/${vehicle.id}`} className="list-group-item list-group-item-action">{vehicle.name}</a>
+                                    <a key={vehicle.id} href={`/vehicles/${vehicle.id}`} className="list-group-item list-group-item-action">{vehicle.name}</a>
                                 )
                             }
                         </div>

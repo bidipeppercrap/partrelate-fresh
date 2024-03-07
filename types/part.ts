@@ -4,3 +4,9 @@ export interface Part {
     description: string,
     note: string
 }
+
+export const partRaw = {
+    name: "",
+    description: "",
+    note: ""
+};

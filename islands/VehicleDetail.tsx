@@ -46,7 +46,7 @@ export default function VehicleDetail({
             headers: { "Authorization": `Bearer ${token}`}
         });
         
-        window.location.href = "/vehicle";
+        window.location.href = "/vehicles";
     }
 
     if (!vehicle.value) return <div className="container my-5"><div className="alert alert-danger">Vehicle not found</div></div>
@@ -67,6 +67,7 @@ export default function VehicleDetail({
             <h3 className="text-center">Parts</h3>
             <div className="mt-3">
                 <VehiclePartSearch
+                    contextState={contextState}
                     vehicleId={vehicle.value.id!}
                     vehicleParts={vehicle.value.vehicleParts}
                     onCreate={createVehiclePart}

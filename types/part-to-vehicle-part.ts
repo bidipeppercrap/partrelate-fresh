@@ -6,5 +6,5 @@ export interface PartToVehiclePart {
     partId: number,
     description: string,
     quantity: string,
-    parts: Part
+    parts?: Part
 }

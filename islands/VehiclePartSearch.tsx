@@ -1,12 +1,15 @@
 import { useComputed, useSignal } from "@preact/signals";
 import { VehiclePart, vehiclePartRaw } from "../types/vehicle-part.ts";
 import VehiclePartList from "../components/VehiclePartList.tsx";
+import { State } from "../routes/_middleware.ts";
 
 export default function VehiclePartSearch({
+    contextState,
     vehicleId,
     vehicleParts,
     onCreate
 }: {
+    contextState: State,
     vehicleId: number,
     vehicleParts: VehiclePart[],
     onCreate: (vp: VehiclePart) => Promise<void>
@@ -63,7 +66,7 @@ export default function VehiclePartSearch({
                 <div className="mt-3">
                     {
                         filteredVehicleParts.value.length > 0
-                        ? <VehiclePartList vehiclePartList={filteredVehicleParts.value} />
+                        ? <VehiclePartList contextState={contextState} vehiclePartList={filteredVehicleParts.value} />
                         : <h3 className="text-secondary text-center">No vehicle part found.</h3>
                     }
                 </div>
@@ -95,7 +98,7 @@ export default function VehiclePartSearch({
                         </div>
                     </div>
                     <div className="col">
-                        <VehiclePartList vehiclePartList={filteredVehicleParts.value} />
+                        <VehiclePartList contextState={contextState} vehiclePartList={filteredVehicleParts.value} />
                     </div>
                 </div>
             )

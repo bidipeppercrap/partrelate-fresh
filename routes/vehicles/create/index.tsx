@@ -1,6 +1,5 @@
 import { Handlers, PageProps } from "$fresh/server.ts";
 import { State } from "../../_middleware.ts";
-import { Vehicle } from "../../../types/vehicle.ts";
 import VehicleCreate from "../../../islands/VehicleCreate.tsx";
 
 export const handler: Handlers<any, State> = {

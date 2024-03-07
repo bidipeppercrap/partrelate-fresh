@@ -19,11 +19,12 @@ export async function handler(
 
     if (partrelateToken) {
         ctx.state.token = partrelateToken;
-        if (ctx.route.startsWith("/login"))
-        return new Response("", {
-            status: 301,
-            headers: { Location: "/" }
-        });
+        if (ctx.route.startsWith("/login")) {
+            return new Response("", {
+                status: 301,
+                headers: { Location: "/" }
+            });
+        }
     }
     if (!partrelateToken && !ctx.route.startsWith("/login")) {
         ctx.state.token = null;

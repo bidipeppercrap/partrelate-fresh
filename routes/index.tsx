@@ -1,10 +1,6 @@
-import { useSignal } from "@preact/signals";
-import Counter from "../islands/Counter.tsx";
-
 export default function Home() {
-  const count = useSignal(3);
   return (
-    <div className="container">
+    <div className="container my-5">
       <h1><i className="bi-gear"></i> PartRelate</h1>
     </div>
   );

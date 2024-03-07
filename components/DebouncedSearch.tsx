@@ -5,18 +5,24 @@ export default function DebouncedSearch({
     value,
     placeholder = "Search...",
     minCharacter = 0,
+    disabled = false,
     onKeyUp,
     onLoading,
     onBeginSearching,
-    onSearchChange
+    onSearchChange,
+    onFocus,
+    onBlur
 }: {
     value?: string,
     placeholder?: string,
     minCharacter?: number,
+    disabled?: boolean,
     onKeyUp?: (e: Event) => void,
     onLoading: () => void,
     onBeginSearching: (q: string) => void,
-    onSearchChange?: (value: string) => void
+    onSearchChange?: (value: string) => void,
+    onFocus?: () => void,
+    onBlur?: () => void
 }) {
     const beginSearching = useCallback((q: string) => {
         onBeginSearching(q);
@@ -41,6 +47,9 @@ export default function DebouncedSearch({
 
     return (
         <input
+            disabled={disabled}
+            onBlur={onBlur}
+            onFocus={onFocus}
             onKeyUp={onKeyUp}
             value={value}
             onInput={handlers.searchChange}
