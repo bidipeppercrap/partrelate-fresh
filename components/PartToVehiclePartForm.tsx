@@ -18,7 +18,7 @@ export default function PartToVehiclePartForm({
 
     const descriptionInput = useRef(null);
     const descriptionValue = useSignal("");
-    const quantityValue = useSignal("");
+    const qtyValue = useSignal("");
 
     const showSelector = useSignal(false);
     const selectorLoading = useSignal(false);
@@ -28,19 +28,21 @@ export default function PartToVehiclePartForm({
     const selectedPart = useSignal<Part | null>(null);
 
     const partValue = useSignal("");
+    const partSearchValue = useSignal("");
 
     const partCreateLoading = useSignal(false);
 
     useSignalEffect(() => {
         const beginSearching = async (q: string) => await searchParts(q);
 
-        beginSearching(partValue.value);
+        beginSearching(partSearchValue.value);
     });
 
     function clearForm() {
         partValue.value = "";
+        partSearchValue.value = "";
         descriptionValue.value = "";
-        quantityValue.value = "";
+        qtyValue.value = "";
     }
 
     async function searchParts(q: string) {
@@ -102,10 +104,10 @@ export default function PartToVehiclePartForm({
             vehiclePartId: vehiclePartId,
             partId: selectedPart.value.id!,
             description: descriptionValue.value,
-            quantity: quantityValue.value,
+            quantity: qtyValue.value
         };
 
-        const res = await fetch(`${apiUrl}/parts_to_vehicle_parts`, {
+        await fetch(`${apiUrl}/parts_to_vehicle_parts`, {
             method: "POST",
             headers: { "Authorization": `Bearer ${token}`},
             body: JSON.stringify(newData)
@@ -130,6 +132,9 @@ export default function PartToVehiclePartForm({
         },
         partInputChange(value: string) {
             partValue.value = value;
+            selectorIndex.value = null;
+            selectorLoading.value = true;
+            selectorItems.value = [];
         },
         partKeyUp(e) {
             if (e.key === "ArrowUp" || e.key ==="ArrowDown") e.preventDefault();
@@ -137,19 +142,15 @@ export default function PartToVehiclePartForm({
             if (e.key === "ArrowUp") return moveSelector(-1);
             if (e.key === "ArrowDown") return moveSelector(1);
             if (e.key === "Enter") return selectorSelect();
-
-            selectorIndex.value = null;
-            selectorLoading.value = true;
-            selectorItems.value = [];
         },
         partBeginSearching(q: string) {
-            partValue.value = q;
+            partSearchValue.value = q;
         },
-        descriptionKeyUp(e) {
-            if (e.key === "Enter") return createPartToVehiclePart();
+        async descriptionKeyDown(e) {
+            if (e.key === "Enter") return await createPartToVehiclePart();
         },
-        quantityKeyUp(e) {
-            if (e.key === "Enter") return createPartToVehiclePart();
+        async quantityKeyDown(e) {
+            if (e.key === "Enter") return await createPartToVehiclePart();
         }
     };
 
@@ -201,16 +202,22 @@ export default function PartToVehiclePartForm({
                             disabled={partCreateLoading.value}
                             onBlur={handlers.partBlur}
                             onFocus={handlers.partFocus}
+                            onSearchChange={handlers.partInputChange}
                             onBeginSearching={handlers.partBeginSearching}
                             onLoading={() => selectorLoading.value = true}
                             onKeyUp={handlers.partKeyUp}
                         />
                     </div>
                     <div className="col">
-                        <input value={descriptionValue.value} onChange={(e) => descriptionValue.value = e.target.value} ref={descriptionInput} type="text" className="form-control" placeholder="Description" />
+                        <input onKeyUp={handlers.descriptionKeyDown} value={descriptionValue.value} onChange={(e) => descriptionValue.value = e.target.value} ref={descriptionInput} type="text" className="form-control" placeholder="Description" />
                     </div>
                     <div className="col-2">
-                        <input value={quantityValue.value} onChange={(e) => quantityValue.value = e.target.value} type="text" className="form-control" placeholder="Quantity" />
+                        <input
+                            value={qtyValue.value}
+                            onChange={(e) => qtyValue.value = e.target.value}
+                            onKeyUp={handlers.quantityKeyDown}
+                            type="text" className="form-control" placeholder="Quantity"
+                        />
                     </div>
                 </div>
             </div>

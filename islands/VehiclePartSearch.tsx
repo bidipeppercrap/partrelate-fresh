@@ -49,6 +49,10 @@ export default function VehiclePartSearch({
         }
     }
 
+    async function refresh() {
+        await onRefresh();
+    }
+
     return (
         <>
         {
@@ -68,7 +72,7 @@ export default function VehiclePartSearch({
                 <div className="mt-3">
                     {
                         filteredVehicleParts.value.length > 0
-                        ? <VehiclePartList onRefresh={onRefresh} contextState={contextState} vehiclePartList={filteredVehicleParts.value} />
+                        ? <VehiclePartList onRefresh={refresh} contextState={contextState} vehiclePartList={filteredVehicleParts.value} />
                         : <h3 className="text-secondary text-center">No vehicle part found.</h3>
                     }
                 </div>
@@ -100,7 +104,7 @@ export default function VehiclePartSearch({
                         </div>
                     </div>
                     <div className="col">
-                        <VehiclePartList onRefresh={onRefresh} contextState={contextState} vehiclePartList={filteredVehicleParts.value} />
+                        <VehiclePartList onRefresh={refresh} contextState={contextState} vehiclePartList={filteredVehicleParts.value} />
                     </div>
                 </div>
             )
