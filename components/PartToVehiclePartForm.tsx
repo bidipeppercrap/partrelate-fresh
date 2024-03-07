@@ -105,7 +105,7 @@ export default function PartToVehiclePartForm({
             quantity: quantityValue.value,
         };
 
-        const res = await fetch(`${apiUrl}/partstovehiclepart`, {
+        const res = await fetch(`${apiUrl}/parts_to_vehicle_parts`, {
             method: "POST",
             headers: { "Authorization": `Bearer ${token}`},
             body: JSON.stringify(newData)
