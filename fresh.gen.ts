@@ -7,6 +7,7 @@ import * as $_app from "./routes/_app.tsx";
 import * as $_middleware from "./routes/_middleware.ts";
 import * as $index from "./routes/index.tsx";
 import * as $login_index from "./routes/login/index.tsx";
+import * as $part_id_index from "./routes/part/[id]/index.tsx";
 import * as $part_create_index from "./routes/part/create/index.tsx";
 import * as $part_index from "./routes/part/index.tsx";
 import * as $vehicles_id_index from "./routes/vehicles/[id]/index.tsx";
@@ -14,6 +15,7 @@ import * as $vehicles_create_index from "./routes/vehicles/create/index.tsx";
 import * as $vehicles_index from "./routes/vehicles/index.tsx";
 import * as $Counter from "./islands/Counter.tsx";
 import * as $PartCreate from "./islands/PartCreate.tsx";
+import * as $PartDetail from "./islands/PartDetail.tsx";
 import * as $PartSearch from "./islands/PartSearch.tsx";
 import * as $VehicleCreate from "./islands/VehicleCreate.tsx";
 import * as $VehicleDetail from "./islands/VehicleDetail.tsx";
@@ -28,6 +30,7 @@ const manifest = {
     "./routes/_middleware.ts": $_middleware,
     "./routes/index.tsx": $index,
     "./routes/login/index.tsx": $login_index,
+    "./routes/part/[id]/index.tsx": $part_id_index,
     "./routes/part/create/index.tsx": $part_create_index,
     "./routes/part/index.tsx": $part_index,
     "./routes/vehicles/[id]/index.tsx": $vehicles_id_index,
@@ -37,6 +40,7 @@ const manifest = {
   islands: {
     "./islands/Counter.tsx": $Counter,
     "./islands/PartCreate.tsx": $PartCreate,
+    "./islands/PartDetail.tsx": $PartDetail,
     "./islands/PartSearch.tsx": $PartSearch,
     "./islands/VehicleCreate.tsx": $VehicleCreate,
     "./islands/VehicleDetail.tsx": $VehicleDetail,

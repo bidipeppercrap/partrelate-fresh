@@ -3,6 +3,7 @@ import { State } from "../routes/_middleware.ts";
 import { SearchList } from "../types/search-list.ts";
 import { Part } from "../types/part.ts";
 import DebouncedSearch from "../components/DebouncedSearch.tsx";
+import { useSignal } from "@preact/signals";
 
 const partRaw: Part = {
     name: "",
@@ -11,9 +12,17 @@ const partRaw: Part = {
 }
 
 export default function PartCreate({
-    contextState
+    contextState,
+    partData,
+    onSave,
+    onRefresh,
+    onDelete
 }: {
-    contextState: State
+    contextState: State,
+    partData: Part,
+    onSave: "create" | "update",
+    onRefresh?: () => Promise<void>,
+    onDelete?: () => Promise<void>
 }) {
     const { apiUrl, token } = contextState;
     const [search, setSearch] = useState<SearchList<Part>>({
@@ -25,7 +34,9 @@ export default function PartCreate({
         },
         list: []
     });
-    const [part, setPart] = useState<Part>(Object.assign({}, partRaw));
+    const [part, setPart] = useState<Part>(Object.assign({}, partData || partRaw));
+    const [mode, setMode] = useState<"edit" | "view">(onSave === "update" ? "view" : "edit")
+    const deleteConfirmation = useSignal(false);
 
     useEffect(() => {
         const beginSearching = async () => await searchPart(search.query, 1);
@@ -53,18 +64,42 @@ export default function PartCreate({
         setPart(Object.assign({}, partRaw));
     }
 
+    async function createPart(part: Part) {
+        await fetch(`${apiUrl}/parts`, {
+            method: "POST",
+            headers: { "Authorization": `Bearer ${token}`},
+            body: JSON.stringify(part)
+        });
+
+        clearForm();
+    }
+
+    async function updatePart(part: Part) {
+        await fetch(`${apiUrl}/parts/${part.id}`, {
+            method: "PUT",
+            headers: { "Authorization": `Bearer ${token}`},
+            body: JSON.stringify(part)
+        });
+
+        if (onRefresh) await onRefresh();
+
+        setMode("view");
+    }
+
     const handlers = {
         searchChange(q: string) {
             setSearch(prev => ({ ...prev, query: q }));
         },
+        cancelForm() {
+            if (onSave === "create") clearForm();
+            if (onSave === "update") {
+                setPart(Object.assign({}, partData))
+                setMode("view")
+            }
+        },
         async savePart() {
-            const res = await fetch(`${apiUrl}/parts`, {
-                method: "POST",
-                headers: { "Authorization": `Bearer ${token}`},
-                body: JSON.stringify(part)
-            })
-
-            clearForm();
+            if (onSave === "create") await createPart(part);
+            if (onSave === "update") await updatePart(part);
         },
         async handleSearchKeyUp(e: Event) {
             if (e.key === "Enter") await handlers.savePart();
@@ -91,29 +126,89 @@ export default function PartCreate({
 
     return (
         <div className="row">
-            <div className="col">
-                <DebouncedSearch
-                    onKeyUp={handlers.handleSearchKeyUp}
-                    value={part.name}
-                    placeholder="Name"
-                    minCharacter={3}
-                    onSearchChange={(value) => setPart(prev => ({ ...prev, name: value }))}
-                    onLoading={() => setSearch(prev => ({ ...prev, loading: true }))}
-                    onBeginSearching={handlers.searchChange}
-                />
-                <div className="mt-2">
-                    <textarea value={part.description} onInput={(e) => setPart(prev => ({ ...prev, description: e.target.value }))} id="description" cols={30} rows={5} className="form-control" placeholder={"Description"}></textarea>
-                </div>
-                <div className="mt-2">
-                    <textarea value={part.note} onInput={(e) => setPart(prev => ({ ...prev, note: e.target.value }))} id="note" cols={30} rows={5} className="form-control" placeholder={"Note"}></textarea>
-                </div>
-                <div className="mt-2">
-                    <button onClick={handlers.savePart} type="button" className="btn btn-primary">Save</button>
-                </div>
-            </div>
-            <div className="col">
-                {listGenerate()}
-            </div>
+            {
+                mode === "view"
+                ? (
+                    <div className="row">
+                        <div className="col">
+                            {
+                                deleteConfirmation.value
+                                ? (
+                                    <>
+                                    <div className="col-auto fw-bold text-secondary">You sure?</div>
+                                    <div className="row g-2 align-items-center mt-1">
+                                        <div className="col-auto">
+                                            <button onClick={onDelete} type="button" className="btn btn-outline-secondary">Yes</button>
+                                        </div>
+                                        <div className="col-auto">
+                                            <button onClick={() => deleteConfirmation.value = false} type="button" className="btn btn-outline-secondary">No</button>
+                                        </div>
+                                    </div>
+                                    </>
+                                ) : (
+                                    <div className="row g-2">
+                                        <div className="col-auto">
+                                            <button onClick={() => setMode("edit")} type="button" className="btn btn-primary"><i className="bi-pencil"></i></button>
+                                        </div>
+                                        {
+                                            onDelete
+                                            ? (
+                                                <div className="col-auto">
+                                                    <button onClick={() => deleteConfirmation.value = true} type="button" className="btn btn-danger"><i className="bi-trash"></i></button>
+                                                </div>
+                                            )
+                                            : null
+                                        }
+                                    </div>
+                                )
+                            }
+                            
+                            {part.description ? <div className="alert alert-secondary mt-2">{part.description}</div> : null}
+                            {part.note ? <div className="alert alert-warning mt-2">{part.note}</div> : null}
+                        </div>
+                        <div className="col"></div>
+                    </div>
+                )
+                : null
+            }
+            {
+                mode === "edit"
+                ? (
+                    <>
+                    <div className="col">
+                        <DebouncedSearch
+                            onKeyUp={handlers.handleSearchKeyUp}
+                            value={part.name}
+                            placeholder="Name"
+                            minCharacter={3}
+                            onSearchChange={(value) => setPart(prev => ({ ...prev, name: value }))}
+                            onLoading={() => setSearch(prev => ({ ...prev, loading: true }))}
+                            onBeginSearching={handlers.searchChange}
+                        />
+                        <div className="mt-2">
+                            <textarea value={part.description} onInput={(e) => setPart(prev => ({ ...prev, description: e.target.value }))} id="description" cols={30} rows={5} className="form-control" placeholder={"Description"}></textarea>
+                        </div>
+                        <div className="mt-2">
+                            <textarea value={part.note} onInput={(e) => setPart(prev => ({ ...prev, note: e.target.value }))} id="note" cols={30} rows={5} className="form-control" placeholder={"Note"}></textarea>
+                        </div>
+                        <div className="mt-2">
+                            <div className="row g-2">
+                                <div className="col-auto">
+                                    <button onClick={handlers.savePart} type="button" className="btn btn-primary">Save</button>
+                                </div>
+                                <div className="col"></div>
+                                <div className="col-auto">
+                                    <button onClick={handlers.cancelForm} type="button" className="btn btn-danger"><i className="bi-x"></i></button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div className="col">
+                        {listGenerate()}
+                    </div>
+                    </>
+                ) : null
+            }
         </div>
     );
 }

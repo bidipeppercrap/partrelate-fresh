@@ -76,12 +76,7 @@ export default function PartSearch({
                         <div className="list-group">
                             {
                                 parts.map(part =>
-                                    <a key={part.id} href="#" className="list-group-item list-group-item-action">
-                                        <div className="row">
-                                            <div className="col">{part.name}</div>
-                                            <div className="col-auto"><button onClick={() => handlers.deletePart(part.id)} type="button" className="btn btn-outline-danger text-bg-danger"><i className="bi-trash"></i></button></div>
-                                        </div>
-                                    </a>
+                                    <a key={part.id} href={`/part/${part.id}`} className="list-group-item list-group-item-action">{part.name}</a>
                                 )
                             }
                         </div>

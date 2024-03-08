@@ -92,7 +92,10 @@ export default function VehicleCreate({
         },
         cancelForm() {
             if (onSave === "create") clearForm();
-            if (onSave === "update") setMode("view");
+            if (onSave === "update") {
+                setVehicle(Object.assign({}, vehicleData))
+                setMode("view")
+            }
         },
         async saveVehicle() {
             if (onSave === "create") await createVehicle(vehicle);
