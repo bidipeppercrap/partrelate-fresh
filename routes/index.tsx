@@ -1,6 +1,5 @@
 export default function Home() {
   const todo = [
-    "useComputed not reactive (vehiclePartList)",
     "constraint - cannot delete vehicle part when there is a part assigned"
   ];
   return (

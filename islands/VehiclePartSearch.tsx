@@ -1,4 +1,4 @@
-import { useComputed, useSignal } from "@preact/signals";
+import { Signal, useComputed, useSignal } from "@preact/signals";
 import { VehiclePart, vehiclePartRaw } from "../types/vehicle-part.ts";
 import VehiclePartList from "../components/VehiclePartList.tsx";
 import { State } from "../routes/_middleware.ts";
@@ -15,7 +15,7 @@ export default function VehiclePartSearch({
 }: {
     contextState: State,
     vehicleId: number,
-    vehicleParts: VehiclePart[],
+    vehicleParts: Signal<VehiclePart[]>,
     onCreate: (vp: VehiclePart) => Promise<void>,
     onUpdate: (vp: VehiclePart) => Promise<void>,
     onDelete?: (id: number) => Promise<void>,
@@ -23,18 +23,14 @@ export default function VehiclePartSearch({
 }) {
     const mode = useSignal<"view" | "create" | "edit">("view");
     const search = useSignal("");
-    const filteredVehicleParts = useComputed<VehiclePart[]>(() => {
-        const rawList = [...vehicleParts];
+    const filteredVehicleParts = useComputed<VehiclePart[]>(() => vehicleParts.value.filter(vehiclePart => {
+        if (newVehiclePart.value.id && vehiclePart.id === newVehiclePart.value.id) return false;
 
-        return rawList.filter(vehiclePart => {
-            if (newVehiclePart.value.id && vehiclePart.id === newVehiclePart.value.id) return false;
+        const queryWords = search.value.toLowerCase().trim().split(" ");
+        const nameWords = vehiclePart.name.toLowerCase().trim().split(" ");
 
-            const queryWords = search.value.toLowerCase().trim().split(" ");
-            const nameWords = vehiclePart.name.toLowerCase().trim().split(" ");
-
-            return queryWords.every(qw => nameWords.some(nw => nw.includes(qw)));
-        });
-    });
+        return queryWords.every(qw => nameWords.some(nw => nw.includes(qw)))
+    }));
 
     const newVehiclePart = useSignal<VehiclePart>(Object.assign({}, {...vehiclePartRaw, vehicleId: vehicleId }));
 
@@ -97,13 +93,13 @@ export default function VehiclePartSearch({
                 </div>
                 <div className="mt-3">
                     {
-                        vehicleParts.length > 0
+                        filteredVehicleParts.value.length > 0
                         ? <VehiclePartList
                             onDelete={handlers.deleteVehiclePart}
                             onEdit={handlers.beginEdit}
                             onRefresh={refresh}
                             contextState={contextState}
-                            vehiclePartList={vehicleParts}
+                            vehiclePartList={filteredVehicleParts.value}
                         />
                         : <h3 className="text-secondary text-center">No vehicle part found.</h3>
                     }

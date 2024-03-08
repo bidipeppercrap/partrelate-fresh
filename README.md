@@ -1,6 +1,6 @@
 # PartRelate - Fresh
 
-### Deno Setup
+### Fresh Setup
 
 1. Fill `.env.example` to `.env`
 1. `deno task start`

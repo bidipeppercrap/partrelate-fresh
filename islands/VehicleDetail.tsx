@@ -1,4 +1,4 @@
-import { useSignal } from "@preact/signals";
+import { useComputed, useSignal, useSignalEffect } from "@preact/signals";
 import { State } from "../routes/_middleware.ts";
 import { VehicleDetail, vehicleDetailRaw } from "../types/vehicle-detail.ts";
 import VehicleCreate from "./VehicleCreate.tsx";
@@ -15,6 +15,7 @@ export default function VehicleDetail({
 }) {
     const { apiUrl, token } = contextState;
     const vehicle = useSignal<VehicleDetail>(Object.assign({}, vehicleDetailRaw));
+    const vehicleParts = useComputed<VehiclePart[]>(() => vehicle.value.vehicleParts);
 
     useEffect(() => {
         const fetchData = async () => await refreshData();
@@ -88,7 +89,7 @@ export default function VehicleDetail({
                 <VehiclePartSearch
                     contextState={contextState}
                     vehicleId={vehicle.value.id!}
-                    vehicleParts={vehicle.value.vehicleParts}
+                    vehicleParts={vehicleParts}
                     onCreate={createVehiclePart}
                     onUpdate={updateVehiclePart}
                     onDelete={deleteVehiclePart}
