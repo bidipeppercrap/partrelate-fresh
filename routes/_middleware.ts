@@ -1,5 +1,4 @@
 import { FreshContext } from "$fresh/server.ts";
-import { load } from "https://deno.land/std@0.218.0/dotenv/mod.ts";
 import { getCookies } from "$std/http/cookie.ts";
 
 export interface State {
@@ -11,8 +10,7 @@ export async function handler(
     req: Request,
     ctx: FreshContext<State>
 ) {
-    const env = await load();
-    const apiUrl = env["API_URL"];
+    const apiUrl = Deno.env.get("API_URL")!;
     const partrelateToken = getCookies(req.headers)["partrelateToken"];
 
     ctx.state.apiUrl = apiUrl;
