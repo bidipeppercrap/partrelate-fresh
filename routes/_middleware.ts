@@ -6,7 +6,7 @@ export interface State {
     apiUrl: string | null;
 }
 
-export async function handler(
+export function handler(
     req: Request,
     ctx: FreshContext<State>
 ) {
