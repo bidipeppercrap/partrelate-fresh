@@ -1,11 +1,12 @@
 import { debounce } from "$std/async/debounce.ts";
-import { useCallback, useEffect, useMemo } from "preact/hooks";
+import { MutableRef, useCallback, useMemo, useRef } from "preact/hooks";
 
 export default function DebouncedSearch({
     value,
     placeholder = "Search...",
     minCharacter = 0,
     disabled = false,
+    inputRef = useRef(null),
     onKeyUp,
     onLoading,
     onBeginSearching,
@@ -17,6 +18,7 @@ export default function DebouncedSearch({
     placeholder?: string,
     minCharacter?: number,
     disabled?: boolean,
+    inputRef?: MutableRef<null | HTMLInputElement>;
     onKeyUp?: (e: Event) => void,
     onLoading: () => void,
     onBeginSearching: (q: string) => void,
@@ -47,6 +49,7 @@ export default function DebouncedSearch({
 
     return (
         <input
+            ref={inputRef}
             disabled={disabled}
             onBlur={onBlur}
             onFocus={onFocus}

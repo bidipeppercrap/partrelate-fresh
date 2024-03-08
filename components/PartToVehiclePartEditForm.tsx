@@ -16,6 +16,7 @@ export default function PartToVehiclePartForm({
 }) {
     const { apiUrl, token } = contextState;
 
+    const partInputRef = useRef(null);
     const descriptionInput = useRef(null);
     const descriptionValue = useSignal(assignedPart.description || "");
     const qtyValue = useSignal(assignedPart.quantity || "");
@@ -112,6 +113,7 @@ export default function PartToVehiclePartForm({
         await onSave(newData);
 
         clearForm();
+        if (partInputRef.current) partInputRef.current.focus();
     }
 
     const handlers = {
@@ -194,6 +196,7 @@ export default function PartToVehiclePartForm({
                             : null
                         }
                         <DebouncedSearch
+                            inputRef={partInputRef}
                             value={partValue.value}
                             disabled={partCreateLoading.value}
                             onBlur={handlers.partBlur}

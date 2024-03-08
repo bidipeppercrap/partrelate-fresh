@@ -68,18 +68,24 @@ export default function AssignedPartDetail({
             {
                 mode.value === "edit"
                 ? (
-                    <>
-                    <div className="col">
-                        <PartToVehiclePartForm
-                            contextState={contextState}
-                            assignedPart={assignedPart}
-                            onSave={handlers.beginUpdate}
-                        />
-                    </div>
-                    <div className="col-auto">
-                        <button onClick={() => mode.value = "view"} type="button" className="btn"><i className="bi-x"></i></button>
-                    </div>
-                    </>
+                    updateLoading.value
+                    ? (
+                        <h5 className="text-center text-secondary my-5">Loading...</h5>
+                    )
+                    : (
+                        <>
+                        <div className="col">
+                            <PartToVehiclePartForm
+                                contextState={contextState}
+                                assignedPart={assignedPart}
+                                onSave={handlers.beginUpdate}
+                            />
+                        </div>
+                        <div className="col-auto">
+                            <button onClick={() => mode.value = "view"} type="button" className="btn"><i className="bi-x"></i></button>
+                        </div>
+                        </>
+                    )
                 ) :
                 null
             }
