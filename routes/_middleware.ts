@@ -11,14 +11,15 @@ export function handler(
     ctx: FreshContext<State>
 ) {
     const apiUrl = Deno.env.get("API_URL")!;
-    const partrelateToken = getCookies(req.headers)["partrelateToken"];
+    const cookies = getCookies(req.headers);
+    const partrelateToken = cookies.partrelateToken;
 
     ctx.state.apiUrl = apiUrl;
 
     if (partrelateToken) {
         ctx.state.token = partrelateToken;
         if (ctx.route.startsWith("/login")) {
-            return new Response("", {
+            return new Response(null, {
                 status: 301,
                 headers: { Location: "/" }
             });
@@ -27,7 +28,7 @@ export function handler(
     if (!partrelateToken && !ctx.route.startsWith("/login")) {
         ctx.state.token = null;
 
-        return new Response("", {
+        return new Response(null, {
             status: 301,
             headers: { Location: "/login" }
         });
