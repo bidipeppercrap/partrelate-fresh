@@ -40,6 +40,16 @@ export default function VehicleDetail({
         await refreshData();
     }
 
+    async function updateVehiclePart(vehiclePart: VehiclePart) {
+        await fetch(`${apiUrl}/vehicle_parts/${vehiclePart.id}`, {
+            method: "PUT",
+            headers: { "Authorization": `Bearer ${token}`},
+            body: JSON.stringify(vehiclePart)
+        });
+
+        await refreshData();
+    }
+
     async function deleteVehicle() {
         await fetch(`${apiUrl}/vehicles/${vehicleId}`, {
             method: "DELETE",
@@ -47,6 +57,15 @@ export default function VehicleDetail({
         });
         
         window.location.href = "/vehicles";
+    }
+
+    async function deleteVehiclePart(id: number) {
+        await fetch(`${apiUrl}/vehicle_parts/${id}`, {
+            method: "DELETE",
+            headers: { "Authorization": `Bearer ${token}`}
+        });
+
+        await refreshData();
     }
 
     if (!vehicle.value) return <div className="container my-5"><div className="alert alert-danger">Vehicle not found</div></div>
@@ -71,6 +90,8 @@ export default function VehicleDetail({
                     vehicleId={vehicle.value.id!}
                     vehicleParts={vehicle.value.vehicleParts}
                     onCreate={createVehiclePart}
+                    onUpdate={updateVehiclePart}
+                    onDelete={deleteVehiclePart}
                     onRefresh={refreshData}
                 />
             </div>

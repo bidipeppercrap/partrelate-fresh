@@ -2,16 +2,23 @@ import { useSignal } from "@preact/signals";
 import { VehiclePart } from "../types/vehicle-part.ts";
 import PartToVehiclePartForm from "./PartToVehiclePartForm.tsx";
 import { State } from "../routes/_middleware.ts";
+import AssignedPartDetail from "./AssignedPartDetail.tsx";
+import { PartToVehiclePart } from "../types/part-to-vehicle-part.ts";
 
 export default function VehiclePartList({
     vehiclePartList,
     contextState,
-    onRefresh
+    onRefresh,
+    onEdit,
+    onDelete
 }: {
     vehiclePartList: VehiclePart[],
     contextState: State,
-    onRefresh: () => Promise<void>
+    onRefresh: () => Promise<void>,
+    onEdit?: (vp: VehiclePart) => void,
+    onDelete?: (id: number) => Promise<void>
 }) {
+    const { apiUrl, token } = contextState;
     const currentAccordion = useSignal<number | null>(null);
     const optionToggle = useSignal<null | number>(null);
 
@@ -19,6 +26,27 @@ export default function VehiclePartList({
         accordionClick(id: number) {
             if (currentAccordion.value === id) currentAccordion.value = null;
             else currentAccordion.value = id;
+        },
+        async updateAssignedPart(assignedPart: PartToVehiclePart) {
+            optionToggle.value = null;
+
+            await fetch(`${apiUrl}/parts_to_vehicle_parts/${assignedPart.id}`, {
+                method: "PUT",
+                headers: { "Authorization": `Bearer ${token}`},
+                body: JSON.stringify(assignedPart)
+            });
+
+            await onRefresh();
+        },
+        async deleteAssignedPart(assignedPart: PartToVehiclePart) {
+            optionToggle.value = null;
+
+            await fetch(`${apiUrl}/parts_to_vehicle_parts/${assignedPart.id}`, {
+                method: "DELETE",
+                headers: { "Authorization": `Bearer ${token}`}
+            });
+
+            await onRefresh();
         }
     }
 
@@ -39,6 +67,26 @@ export default function VehiclePartList({
                             ? (
                                 <div className="accordion-collapse collapse show">
                                     <div className="accordion-body">
+                                        <div className="row mb-3">
+                                            {
+                                                onEdit
+                                                ? (
+                                                    <div className="col-auto">
+                                                        <button onClick={() => onEdit(vehiclePart)} type="button" className="btn btn-primary"><i className="bi-pencil"></i></button>
+                                                    </div>
+                                                )
+                                                : null
+                                            }
+                                            {
+                                                onDelete
+                                                ? (
+                                                    <div className="col-auto">
+                                                        <button onClick={() => onDelete(vehiclePart.id!)} type="button" className="btn btn-danger"><i className="bi-trash"></i></button>
+                                                    </div>
+                                                )
+                                                : null
+                                            }
+                                        </div>
                                         {vehiclePart.description ? <div className="alert alert-secondary">{vehiclePart.description}</div> : null}
                                         {vehiclePart.note ? <div className="alert alert-warning">{vehiclePart.note}</div> : null}
                                         {vehiclePart.note || vehiclePart.description ? <hr /> : null}
@@ -48,24 +96,14 @@ export default function VehiclePartList({
                                                 <ul className="list-group">
                                                     {vehiclePart.partsToVehicleParts.map((part, i) =>
                                                         <li className="list-group-item">
-                                                            <div className="row">
-                                                                <div className="col">
-                                                                    {part.description ? <div className="badge rounded-pill text-bg-secondary mb-1">{part.description}</div> : null}
-                                                                    <div>{part.parts!.name}</div>
-                                                                    {part.quantity ? <div className="badge text-bg-info mt-2 p-2">{part.quantity}</div> : null}
-                                                                    {part.parts!.note ? <div><div className="badge text-bg-warning mt-2 p-2">{part.parts!.note}</div></div> : null}
-                                                                </div>
-                                                                <div className="col-auto">
-                                                                    <div className="dropdown">
-                                                                        <button onClick={() => optionToggle.value === i ? optionToggle.value = null : optionToggle.value = i} type="button" className="btn"><i className="bi-three-dots"></i></button>
-                                                                    </div>
-                                                                    <ul style={{minWidth: "unset"}} className={`dropdown-menu ${optionToggle.value === i ? "show" : ""}`}>
-                                                                        <li><a role="button" className="dropdown-item text-secondary"><i className="bi-info"></i></a></li>
-                                                                        <li><a role="button" className="dropdown-item text-primary"><i className="bi-pencil"></i></a></li>
-                                                                        <li><a role="button" className="dropdown-item text-danger"><i className="bi-trash"></i></a></li>
-                                                                    </ul>
-                                                                </div>
-                                                            </div>
+                                                            <AssignedPartDetail
+                                                                contextState={contextState}
+                                                                assignedPart={part}
+                                                                optionToggle={optionToggle.value === i}
+                                                                onOptionToggle={() => optionToggle.value === i ? optionToggle.value = null : optionToggle.value = i}
+                                                                onUpdate={(ap) => handlers.updateAssignedPart(ap)}
+                                                                onDelete={(p) => handlers.deleteAssignedPart(p)}
+                                                            />
                                                         </li>
                                                     )}
                                                 </ul>

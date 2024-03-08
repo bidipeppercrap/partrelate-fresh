@@ -1,8 +1,7 @@
 export default function Home() {
   const todo = [
-    "refresh vehicle detail after creating (part to vehicle part)",
-    "info, edit, delete (part to vehicle part)",
-    "edit, delete (vehicle part)",
+    "useComputed not reactive (vehiclePartList)",
+    "constraint - cannot delete vehicle part when there is a part assigned"
   ];
   return (
     <div className="container my-5">
