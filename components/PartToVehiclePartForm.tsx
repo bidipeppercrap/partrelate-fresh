@@ -79,6 +79,7 @@ export default function PartToVehiclePartForm({
         const jsonData = await res.json();
 
         selectedPart.value = jsonData[0];
+        if (selectedPart.value) partValue.value = selectedPart.value.name;
 
         partCreateLoading.value = false;
         if (descriptionInput.current) descriptionInput.current.focus();
